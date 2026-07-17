@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contextly — Your AI should know what your team knows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ─────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  color:#111827;
+  background:#FFFFFF;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden
+}
+
+/* ── Palette (CSS vars for reference) ── */
+/* Navy: #0B1D3A | Blue: #2563EB | Blue-light: #EFF6FF | Stone: #F8FAFC */
+
+/* ── NAV ─────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem clamp(1.5rem,6vw,5rem);
+  background:rgba(255,255,255,0.96);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid #E5E7EB;
+}
+.logo{
+  font-family:'DM Serif Display',serif;
+  font-size:1.25rem;color:#0B1D3A;
+  text-decoration:none;letter-spacing:-.01em
+}
+.nav-r{display:flex;align-items:center;gap:2rem}
+.nav-a{font-size:.875rem;color:#6B7280;text-decoration:none;font-weight:500;transition:color .2s}
+.nav-a:hover{color:#0B1D3A}
+.nav-btn{
+  font-size:.875rem;font-weight:600;
+  color:#fff;background:#0B1D3A;
+  padding:.55rem 1.3rem;border-radius:6px;
+  text-decoration:none;transition:background .2s;white-space:nowrap
+}
+.nav-btn:hover{background:#2563EB}
+
+/* ── HERO ────────────────────────────── */
+#hero{
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding:7rem clamp(1.5rem,6vw,5rem) 5rem;
+  background:#fff
+}
+.hero-wrap{max-width:1100px;margin:0 auto;width:100%}
+.hero-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;letter-spacing:.18em;
+  text-transform:uppercase;color:#2563EB;
+  margin-bottom:1.5rem
+}
+.hero-h1{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(2.8rem,6vw,5.2rem);
+  line-height:1.05;letter-spacing:-.03em;
+  color:#0B1D3A;max-width:780px;
+  margin-bottom:1.8rem
+}
+.hero-h1 i{font-style:italic;color:#2563EB}
+.hero-p{
+  font-size:clamp(1rem,1.6vw,1.15rem);
+  color:#6B7280;line-height:1.7;
+  max-width:500px;margin-bottom:2.5rem
+}
+.hero-p strong{color:#111827;font-weight:500}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:#0B1D3A;color:#fff;
+  font-size:.95rem;font-weight:600;
+  padding:.9rem 1.8rem;border-radius:6px;
+  text-decoration:none;transition:background .2s
+}
+.btn-primary:hover{background:#2563EB}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:.4rem;
+  color:#6B7280;font-size:.9rem;font-weight:500;
+  text-decoration:none;transition:color .2s;margin-left:1.2rem
+}
+.btn-ghost:hover{color:#0B1D3A}
+.hero-stats{
+  display:flex;gap:3rem;flex-wrap:wrap;
+  margin-top:4rem;padding-top:2.5rem;
+  border-top:1px solid #E5E7EB
+}
+.hstat-n{
+  font-family:'DM Serif Display',serif;
+  font-size:2.2rem;letter-spacing:-.04em;
+  color:#0B1D3A;line-height:1
+}
+.hstat-n sup{font-size:.55em;color:#2563EB;vertical-align:super}
+.hstat-l{font-size:.8rem;color:#9CA3AF;line-height:1.4;max-width:140px;margin-top:.3rem}
+
+/* ── SECTION SHELL ────────────────────── */
+.sec{padding:clamp(4rem,10vw,8rem) clamp(1.5rem,6vw,5rem)}
+.inner{max-width:1100px;margin:0 auto}
+.tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:#2563EB;
+  display:block;margin-bottom:1.1rem
+}
+.sec-h2{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(2rem,3.8vw,3rem);
+  line-height:1.1;letter-spacing:-.025em;
+  color:#0B1D3A;margin-bottom:1.2rem
+}
+.sec-h2 i{font-style:italic;color:#2563EB}
+.sec-p{font-size:1.05rem;color:#6B7280;line-height:1.7;margin-bottom:1rem}
+.sec-p strong{color:#111827;font-weight:500}
+
+/* ── PAIN ────────────────────────────── */
+#pain{background:#F8FAFC}
+.pain-cards{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.25rem;margin-top:3rem
+}
+.pc{
+  background:#fff;border:1px solid #E5E7EB;
+  border-radius:10px;padding:1.7rem;
+  transition:box-shadow .2s,transform .2s
+}
+.pc:hover{box-shadow:0 8px 30px rgba(11,29,58,.07);transform:translateY(-2px)}
+.pc-q{
+  font-family:'DM Serif Display',serif;
+  font-size:1.1rem;color:#0B1D3A;
+  line-height:1.35;margin-bottom:.8rem
+}
+.pc-a{font-size:.875rem;color:#6B7280;line-height:1.6}
+.pc-a strong{color:#2563EB;font-weight:600;display:block;margin-bottom:.2rem}
+
+/* ── BEFORE/AFTER ─────────────────────── */
+#change{background:#fff}
+.change-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.ba{
+  border:1px solid #E5E7EB;border-radius:10px;
+  overflow:hidden
+}
+.ba-header{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:#E5E7EB
+}
+.ba-hcol{
+  padding:.7rem 1.2rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;letter-spacing:.12em;
+  text-transform:uppercase
+}
+.ba-hcol:first-child{background:#F8FAFC;color:#9CA3AF}
+.ba-hcol:last-child{background:#EFF6FF;color:#2563EB}
+.ba-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#E5E7EB}
+.ba-cell{background:#fff;padding:1.1rem 1.2rem;font-size:.875rem;color:#111827;line-height:1.5}
+.ba-cell.dim{color:#9CA3AF;text-decoration:line-through}
+.ba-cell.good{background:#EFF6FF;color:#1D4ED8}
+
+/* ── ANIMATION SECTION ─────────────────── */
+#demo{background:#0B1D3A}
+
+/* All text inside #demo should be white */
+#demo .tag{color:#93C5FD}
+#demo .sec-h2{color:#FFFFFF}
+#demo .sec-p{color:#94A3B8}
+
+/* Toggle */
+.toggle-wrap{
+  display:flex;justify-content:center;
+  margin:2rem 0 2.5rem
+}
+.toggle{
+  display:inline-flex;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:8px;padding:4px;gap:4px
+}
+.t-btn{
+  font-family:'Inter',sans-serif;
+  font-size:.875rem;font-weight:500;
+  color:rgba(255,255,255,.75);
+  background:transparent;border:none;
+  padding:.6rem 1.4rem;border-radius:6px;
+  cursor:pointer;transition:all .22s;
+  display:flex;align-items:center;gap:.5rem
+}
+.t-btn.on{
+  background:#2563EB;color:#fff;
+  box-shadow:0 2px 12px rgba(37,99,235,.4)
+}
+.t-btn:hover:not(.on){color:#fff;background:rgba(255,255,255,.1)}
+
+/* Diagram wrapper */
+.diagram{display:none}
+.diagram.active{display:block}
+.diagram svg{width:100%;max-width:800px;display:block;margin:0 auto}
+
+/* ── WHO ─────────────────────────────── */
+#who{background:#F8FAFC}
+.who-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem}
+.wc{border-left:3px solid #2563EB;padding:1.2rem 0 1.2rem 1.4rem}
+.wc-role{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;letter-spacing:.12em;
+  text-transform:uppercase;color:#2563EB;margin-bottom:.5rem
+}
+.wc-title{
+  font-family:'DM Serif Display',serif;
+  font-size:1.1rem;color:#0B1D3A;margin-bottom:.5rem
+}
+.wc-body{font-size:.875rem;color:#6B7280;line-height:1.6}
+
+/* ── FOUNDER ─────────────────────────── */
+#founder{background:#fff}
+.founder-box{
+  display:flex;gap:4rem;align-items:flex-start;
+  background:#F8FAFC;border:1px solid #E5E7EB;
+  border-radius:12px;padding:2.5rem 3rem;flex-wrap:wrap
+}
+.founder-left{flex:1;min-width:220px}
+.f-name{
+  font-family:'DM Serif Display',serif;
+  font-size:1.5rem;color:#0B1D3A;margin-bottom:.2rem
+}
+.f-role{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:#2563EB;margin-bottom:1rem
+}
+.f-bio{font-size:.9rem;color:#6B7280;line-height:1.65}
+.founder-right{flex:2;min-width:280px}
+.f-quote{
+  font-family:'DM Serif Display',serif;
+  font-size:1.2rem;font-style:italic;
+  line-height:1.6;color:#0B1D3A
+}
+
+/* ── CTA ─────────────────────────────── */
+#cta{background:#0B1D3A;text-align:center;padding:clamp(5rem,13vw,11rem) clamp(1.5rem,6vw,5rem)}
+#cta .tag{color:#93C5FD;display:block;margin-bottom:1.2rem}
+.cta-h2{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(2.5rem,5.5vw,4.2rem);
+  line-height:1.06;letter-spacing:-.03em;
+  color:#fff;max-width:660px;
+  margin:0 auto 1.4rem
+}
+.cta-h2 i{font-style:italic;color:#93C5FD}
+.cta-sub{
+  font-size:1rem;color:#94A3B8;
+  max-width:420px;margin:0 auto 2.8rem;line-height:1.65
+}
+.cta-form{
+  display:flex;gap:.6rem;max-width:400px;
+  margin:0 auto .9rem;flex-wrap:wrap;justify-content:center
+}
+.cta-input{
+  flex:1;min-width:210px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff;font-family:'Inter',sans-serif;
+  font-size:.9rem;padding:.85rem 1rem;
+  border-radius:6px;outline:none;
+  transition:border-color .2s
+}
+.cta-input::placeholder{color:rgba(255,255,255,.35)}
+.cta-input:focus{border-color:#2563EB}
+.cta-btn{
+  background:#2563EB;color:#fff;
+  font-family:'Inter',sans-serif;
+  font-size:.9rem;font-weight:600;
+  padding:.85rem 1.5rem;border:none;
+  border-radius:6px;cursor:pointer;
+  transition:opacity .2s;white-space:nowrap
+}
+.cta-btn:hover{opacity:.88}
+.cta-note{font-size:.78rem;color:rgba(255,255,255,.3)}
+.cta-note.ok{color:#93C5FD}
+
+/* ── FOOTER ──────────────────────────── */
+footer{
+  padding:1.8rem clamp(1.5rem,6vw,5rem);
+  border-top:1px solid #E5E7EB;
+  display:flex;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;gap:1rem
+}
+.f-logo{
+  font-family:'DM Serif Display',serif;
+  font-size:1rem;color:#0B1D3A;text-decoration:none
+}
+.f-meta{font-size:.8rem;color:#9CA3AF}
+.f-meta a{color:#9CA3AF;text-decoration:none}
+.f-meta a:hover{color:#0B1D3A}
+
+/* ── RESPONSIVE ──────────────────────── */
+@media(max-width:900px){
+  .change-grid{grid-template-columns:1fr;gap:2.5rem}
+  .pain-cards,.who-cards{grid-template-columns:1fr 1fr}
+  .founder-box{flex-direction:column;gap:2rem;padding:2rem}
+}
+@media(max-width:580px){
+  .nav-r .nav-a{display:none}
+  .pain-cards,.who-cards{grid-template-columns:1fr}
+  .hero-stats{gap:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Contextly</a>
+  <div class="nav-r">
+    <a href="#pain" class="nav-a">Problem</a>
+    <a href="#who" class="nav-a">Who it's for</a>
+    <a href="#cta" class="nav-btn">Book a call</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-wrap">
+    <p class="hero-tag">Living Context Infrastructure</p>
+    <h1 class="hero-h1">
+      Your AI works.<br>
+      But it doesn't know<br>what your team <i>knows.</i>
+    </h1>
+    <p class="hero-p">
+      Every session starts from scratch. Every agent forgets.
+      Every tool operates on context that is
+      <strong>stale, siloed, or simply missing.</strong>
+      Contextly fixes that.
+    </p>
+    <div>
+      <a href="#cta" class="btn-primary">
+        Book a call
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#demo" class="btn-ghost">
+        See it in action
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hstat-n">40<sup>%</sup></div>
+        <div class="hstat-l">of developers say context fragmentation is their #1 blocker</div>
+      </div>
+      <div>
+        <div class="hstat-n">89<sup>%</sup></div>
+        <div class="hstat-l">of AI teams deploy observability because agents can't be trusted</div>
+      </div>
+      <div>
+        <div class="hstat-n">$47<sup>B</sup></div>
+        <div class="hstat-l">AI agents market by 2030 — context is the missing layer</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAIN -->
+<section id="pain" class="sec">
+  <div class="inner">
+    <span class="tag">Sound familiar?</span>
+    <h2 class="sec-h2">If your AI is smart but frustrating,<br>this is probably why.</h2>
+    <div class="pain-cards">
+      <div class="pc">
+        <div class="pc-q">"Why did the agent do that? It knows better than this."</div>
+        <div class="pc-a"><strong>Context rot.</strong> It did know better — three months ago. Your knowledge moved on. Your AI didn't.</div>
+      </div>
+      <div class="pc">
+        <div class="pc-q">"I have to explain the same thing to every AI tool we use."</div>
+        <div class="pc-a"><strong>Context fragmentation.</strong> Your knowledge lives in Slack, Notion, GitHub. Not one of your AI tools can see all of it.</div>
+      </div>
+      <div class="pc">
+        <div class="pc-q">"We can't put this agent in production. It's not reliable enough."</div>
+        <div class="pc-a"><strong>Context gaps.</strong> Your agent isn't broken. It's operating on incomplete information and making confident mistakes.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section id="change" class="sec">
+  <div class="inner">
+    <div class="change-grid">
+      <div>
+        <span class="tag">What changes</span>
+        <h2 class="sec-h2">Imagine your AI already knowing what took 20 minutes to explain.</h2>
+        <p class="sec-p">Contextly sits between your existing tools and your AI systems. It makes organisational knowledge <strong>structured, current, and accessible</strong> — to any model, any agent, any workflow.</p>
+        <p class="sec-p">You stop feeding context manually. Your agents stop forgetting. Teams stop repeating themselves.</p>
+        <a href="#cta" style="display:inline-flex;align-items:center;gap:.4rem;color:#2563EB;font-size:.9rem;font-weight:600;text-decoration:none;margin-top:.5rem">
+          Talk to us about your setup
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <div class="ba">
+        <div class="ba-header">
+          <div class="ba-hcol">Before</div>
+          <div class="ba-hcol">With Contextly</div>
+        </div>
+        <div class="ba-row">
+          <div class="ba-cell dim">Paste context into every prompt</div>
+          <div class="ba-cell good">AI already knows the project</div>
+        </div>
+        <div class="ba-row">
+          <div class="ba-cell dim">Agent acts on 6-month-old decision</div>
+          <div class="ba-cell good">Stale context flagged before damage</div>
+        </div>
+        <div class="ba-row">
+          <div class="ba-cell dim">Same explanation, every tool</div>
+          <div class="ba-cell good">One knowledge layer. All tools.</div>
+        </div>
+        <div class="ba-row">
+          <div class="ba-cell dim">Agent too unreliable for production</div>
+          <div class="ba-cell good">Agent runs reliably. Ships.</div>
+        </div>
+        <div class="ba-row">
+          <div class="ba-cell dim">Locked into one AI tool's memory</div>
+          <div class="ba-cell good">Works across Claude, GPT, any LLM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO / ANIMATION -->
+<section id="demo" class="sec">
+  <div class="inner">
+    <span class="tag">See it in action</span>
+    <h2 class="sec-h2" style="color:#fff">Two worlds. Same problem. One fix.</h2>
+    <p class="sec-p" style="color:#94A3B8;max-width:560px">Whether you're running engineering agents or customer-facing AI — context fragmentation breaks both.</p>
+
+    <div class="toggle-wrap">
+      <div class="toggle">
+        <button class="t-btn on" id="btn-eng" onclick="showDiagram('eng')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          Engineering
+        </button>
+        <button class="t-btn" id="btn-cx" onclick="showDiagram('cx')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Customer Experience
+        </button>
+      </div>
+    </div>
+
+    <!-- ENGINEERING DIAGRAM -->
+    <div class="diagram active" id="diag-eng">
+      <svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg">
+        <!-- Source label -->
+        <text x="10" y="18" font-family="JetBrains Mono,monospace" font-size="9" fill="#475569" letter-spacing="2">FRAGMENTED SOURCES</text>
+        <!-- Sources -->
+        <rect x="10" y="28" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="42" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">GITHUB</text>
+        <text x="66" y="57" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">auth-service</text>
+
+        <rect x="10" y="74" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="88" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">SLACK</text>
+        <text x="66" y="103" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">#backend-decisions</text>
+
+        <rect x="10" y="120" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="134" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">NOTION</text>
+        <text x="66" y="149" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">arch decisions Q2</text>
+
+        <rect x="10" y="166" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="180" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">JIRA</text>
+        <text x="66" y="195" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">sprint-44</text>
+
+        <rect x="10" y="212" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="226" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">LINEAR</text>
+        <text x="66" y="241" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">ENG-2041</text>
+
+        <!-- Dashed animated lines to Contextly -->
+        <line x1="122" y1="46" x2="288" y2="148" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.6s" repeatCount="indefinite"/>
+        </line>
+        <line x1="122" y1="92" x2="288" y2="158" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="2s" repeatCount="indefinite"/>
+        </line>
+        <line x1="122" y1="138" x2="288" y2="168" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.4s" repeatCount="indefinite"/>
+        </line>
+        <line x1="122" y1="184" x2="288" y2="178" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.8s" repeatCount="indefinite"/>
+        </line>
+        <line x1="122" y1="230" x2="288" y2="188" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="2.2s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Contextly core -->
+        <rect x="288" y="116" width="144" height="120" rx="10" fill="#1E40AF"/>
+        <text x="360" y="147" font-family="DM Serif Display,serif" font-size="17" fill="#fff" text-anchor="middle">Contextly</text>
+        <line x1="306" y1="158" x2="414" y2="158" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="360" y="172" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#93C5FD" text-anchor="middle" letter-spacing="1.5">STRUCTURED</text>
+        <text x="360" y="186" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#93C5FD" text-anchor="middle" letter-spacing="1.5">VERSIONED</text>
+        <text x="360" y="200" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#93C5FD" text-anchor="middle" letter-spacing="1.5">GOVERNED</text>
+        <text x="360" y="220" font-family="JetBrains Mono,monospace" font-size="7" fill="rgba(255,255,255,0.35)" text-anchor="middle" letter-spacing="1">via CML</text>
+
+        <!-- Solid output lines -->
+        <line x1="432" y1="152" x2="510" y2="104" stroke="#60A5FA" stroke-width="1.8">
+          <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+        </line>
+        <line x1="432" y1="176" x2="510" y2="176" stroke="#60A5FA" stroke-width="1.8">
+          <animate attributeName="opacity" values="0.3;1;0.3" dur="2.5s" repeatCount="indefinite"/>
+        </line>
+        <line x1="432" y1="200" x2="510" y2="248" stroke="#60A5FA" stroke-width="1.8">
+          <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Agent nodes -->
+        <rect x="510" y="76" width="130" height="56" rx="8" fill="rgba(37,99,235,0.2)" stroke="rgba(96,165,250,0.45)"/>
+        <text x="575" y="96" font-family="JetBrains Mono,monospace" font-size="8" fill="#93C5FD" text-anchor="middle" letter-spacing="1">CODING AGENT</text>
+        <text x="575" y="112" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">Knows full architecture</text>
+        <text x="575" y="125" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">before writing a line</text>
+
+        <rect x="510" y="148" width="130" height="56" rx="8" fill="rgba(37,99,235,0.2)" stroke="rgba(96,165,250,0.45)"/>
+        <text x="575" y="168" font-family="JetBrains Mono,monospace" font-size="8" fill="#93C5FD" text-anchor="middle" letter-spacing="1">CODE REVIEW</text>
+        <text x="575" y="184" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">Flags regressions</text>
+        <text x="575" y="197" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">against past decisions</text>
+
+        <rect x="510" y="220" width="130" height="56" rx="8" fill="rgba(37,99,235,0.2)" stroke="rgba(96,165,250,0.45)"/>
+        <text x="575" y="240" font-family="JetBrains Mono,monospace" font-size="8" fill="#93C5FD" text-anchor="middle" letter-spacing="1">DOC AGENT</text>
+        <text x="575" y="256" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">Always current.</text>
+        <text x="575" y="269" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">Never stale.</text>
+
+        <!-- Result -->
+        <rect x="656" y="150" width="132" height="52" rx="8" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/>
+        <text x="722" y="170" font-family="Inter,sans-serif" font-size="11" fill="#94A3B8" text-anchor="middle">Agents that</text>
+        <text x="722" y="186" font-family="DM Serif Display,serif" font-size="15" fill="#fff" text-anchor="middle" font-style="italic">actually ship</text>
+        <line x1="640" y1="176" x2="656" y2="176" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3 2"/>
+      </svg>
+    </div>
+
+    <!-- CUSTOMER EXPERIENCE DIAGRAM -->
+    <div class="diagram" id="diag-cx">
+      <svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" font-family="JetBrains Mono,monospace" font-size="9" fill="#475569" letter-spacing="2">CUSTOMER SIGNALS</text>
+
+        <rect x="10" y="28" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="42" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">CRM</text>
+        <text x="66" y="57" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">Acme Corp history</text>
+
+        <rect x="10" y="74" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="88" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">SUPPORT</text>
+        <text x="66" y="103" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">3 open tickets</text>
+
+        <rect x="10" y="120" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="134" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">EMAIL</text>
+        <text x="66" y="149" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">contract renewal</text>
+
+        <rect x="10" y="166" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="180" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">CALLS</text>
+        <text x="66" y="195" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">last call transcript</text>
+
+        <rect x="10" y="212" width="112" height="36" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="66" y="226" font-family="JetBrains Mono,monospace" font-size="8" fill="#64748B" text-anchor="middle" letter-spacing="1.2">PRODUCT</text>
+        <text x="66" y="241" font-family="Inter,sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">usage last 30 days</text>
+
+        <line x1="122" y1="46" x2="288" y2="148" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.7s" repeatCount="indefinite"/>
+        </line>
+        <line x1="122" y1="92" x2="288" y2="158" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.5s" repeatCount="indefinite"/>
+        </line>
+        <line x1="122" y1="138" x2="288" y2="168" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="2.1s" repeatCount="indefinite"/>
+        </line>
+        <line x1="122" y1="184" x2="288" y2="178" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.9s" repeatCount="indefinite"/>
+        </line>
+        <line x1="122" y1="230" x2="288" y2="188" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.3s" repeatCount="indefinite"/>
+        </line>
+
+        <rect x="288" y="116" width="144" height="120" rx="10" fill="#1E40AF"/>
+        <text x="360" y="147" font-family="DM Serif Display,serif" font-size="17" fill="#fff" text-anchor="middle">Contextly</text>
+        <line x1="306" y1="158" x2="414" y2="158" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="360" y="172" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#93C5FD" text-anchor="middle" letter-spacing="1.5">360° CUSTOMER</text>
+        <text x="360" y="186" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#93C5FD" text-anchor="middle" letter-spacing="1.5">CONTEXT GRAPH</text>
+        <text x="360" y="200" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#93C5FD" text-anchor="middle" letter-spacing="1.5">ALWAYS CURRENT</text>
+        <text x="360" y="220" font-family="JetBrains Mono,monospace" font-size="7" fill="rgba(255,255,255,0.35)" text-anchor="middle" letter-spacing="1">via CML</text>
+
+        <line x1="432" y1="152" x2="510" y2="104" stroke="#60A5FA" stroke-width="1.8">
+          <animate attributeName="opacity" values="0.3;1;0.3" dur="1.9s" repeatCount="indefinite"/>
+        </line>
+        <line x1="432" y1="176" x2="510" y2="176" stroke="#60A5FA" stroke-width="1.8">
+          <animate attributeName="opacity" values="0.3;1;0.3" dur="2.3s" repeatCount="indefinite"/>
+        </line>
+        <line x1="432" y1="200" x2="510" y2="248" stroke="#60A5FA" stroke-width="1.8">
+          <animate attributeName="opacity" values="0.3;1;0.3" dur="1.7s" repeatCount="indefinite"/>
+        </line>
+
+        <rect x="510" y="76" width="130" height="56" rx="8" fill="rgba(37,99,235,0.2)" stroke="rgba(96,165,250,0.45)"/>
+        <text x="575" y="96" font-family="JetBrains Mono,monospace" font-size="8" fill="#93C5FD" text-anchor="middle" letter-spacing="1">SUPPORT AGENT</text>
+        <text x="575" y="112" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">Knows 3 open tickets</text>
+        <text x="575" y="125" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">before saying hello</text>
+
+        <rect x="510" y="148" width="130" height="56" rx="8" fill="rgba(37,99,235,0.2)" stroke="rgba(96,165,250,0.45)"/>
+        <text x="575" y="168" font-family="JetBrains Mono,monospace" font-size="8" fill="#93C5FD" text-anchor="middle" letter-spacing="1">SALES AGENT</text>
+        <text x="575" y="184" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">Personalises renewal</text>
+        <text x="575" y="197" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">pitch automatically</text>
+
+        <rect x="510" y="220" width="130" height="56" rx="8" fill="rgba(37,99,235,0.2)" stroke="rgba(96,165,250,0.45)"/>
+        <text x="575" y="240" font-family="JetBrains Mono,monospace" font-size="8" fill="#93C5FD" text-anchor="middle" letter-spacing="1">ONBOARDING</text>
+        <text x="575" y="256" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">Adapts to customer</text>
+        <text x="575" y="269" font-family="Inter,sans-serif" font-size="10.5" fill="#E2E8F0" text-anchor="middle">history on day one</text>
+
+        <rect x="656" y="150" width="132" height="52" rx="8" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/>
+        <text x="722" y="170" font-family="Inter,sans-serif" font-size="11" fill="#94A3B8" text-anchor="middle">AI that feels like</text>
+        <text x="722" y="186" font-family="DM Serif Display,serif" font-size="15" fill="#fff" text-anchor="middle" font-style="italic">it remembers</text>
+        <line x1="640" y1="176" x2="656" y2="176" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3 2"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- WHO -->
+<section id="who" class="sec">
+  <div class="inner">
+    <span class="tag">Who it's for</span>
+    <h2 class="sec-h2">Built for anyone running AI seriously —<br>not just experimenting with it.</h2>
+    <div class="who-cards">
+      <div class="wc">
+        <div class="wc-role">AI Engineering Teams</div>
+        <div class="wc-title">You're building agents. Context is killing your reliability.</div>
+        <div class="wc-body">Your agents are technically sound. They just don't know what they need to — and you're spending half your time fixing that manually.</div>
+      </div>
+      <div class="wc">
+        <div class="wc-role">Enterprise AI Teams</div>
+        <div class="wc-title">You're scaling AI across departments. Nobody agrees on the truth.</div>
+        <div class="wc-body">Legal says one thing. Engineering says another. Finance's AI is working from a policy that changed last quarter. Context governance is the problem nobody owns.</div>
+      </div>
+      <div class="wc">
+        <div class="wc-role">Technical Founders</div>
+        <div class="wc-title">Your product is AI. Your biggest technical debt is context.</div>
+        <div class="wc-body">You can feel it compounding. Every new feature needs more context duct-taped to it. This is the infrastructure layer you haven't built yet — and you know you need it.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section id="founder" class="sec">
+  <div class="inner">
+    <div class="founder-box">
+      <div class="founder-left">
+        <div class="f-name">Dinesh</div>
+        <div class="f-role">Founder · Contextly</div>
+        <p class="f-bio">I built Contextly because I kept seeing the same failure — AI systems confident, capable, and operating on information that simply wasn't accurate anymore.</p>
+      </div>
+      <div class="founder-right">
+        <p class="f-quote">Every day I watched AI systems make confident mistakes — not because the models were wrong, but because the context they operated on was stale, fragmented, or simply missing. I built Contextly to fix that.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <span class="tag">Early Access</span>
+  <h2 class="cta-h2">Stop explaining.<br>Let your AI <i>remember.</i></h2>
+  <p class="cta-sub">We're onboarding early teams personally. Book a 30-minute call with the founder — we'll look at your setup and show you what's possible.</p>
+  <div class="cta-form">
+    <input type="email" class="cta-input" placeholder="you@company.com" id="email-input">
+    <button class="cta-btn" onclick="handleSubmit()">Book a call</button>
+  </div>
+  <p class="cta-note" id="cta-note">hello@getcontextly.com · No pitch decks. Just a real conversation.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="f-logo">Contextly</a>
+  <div class="f-meta">
+    <span>© Contextly 2026 · </span>
+    <a href="mailto:hello@getcontextly.com">hello@getcontextly.com</a>
+  </div>
+</footer>
+
+<script>
+// Nav scroll
+window.addEventListener('scroll', () => {
+  document.querySelector('nav').style.borderBottomColor = window.scrollY > 20 ? '#E5E7EB' : 'transparent';
+}, { passive: true });
+
+// Diagram toggle
+function showDiagram(mode) {
+  document.getElementById('diag-eng').classList.toggle('active', mode === 'eng');
+  document.getElementById('diag-cx').classList.toggle('active', mode === 'cx');
+  document.getElementById('btn-eng').classList.toggle('on', mode === 'eng');
+  document.getElementById('btn-cx').classList.toggle('on', mode === 'cx');
+}
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); window.scrollTo({ top: t.offsetTop - 68, behavior: 'smooth' }); }
+  });
+});
+
+// CTA form
+function handleSubmit() {
+  const inp = document.getElementById('email-input');
+  const note = document.getElementById('cta-note');
+  if (!inp.value.trim() || !inp.value.includes('@')) {
+    inp.style.borderColor = '#EF4444';
+    return;
+  }
+  inp.style.borderColor = '#2563EB';
+  inp.disabled = true;
+  document.querySelector('.cta-btn').disabled = true;
+  document.querySelector('.cta-btn').textContent = 'Sent ✓';
+  note.textContent = "We'll be in touch at " + inp.value.trim() + " — usually within a day.";
+  note.className = 'cta-note ok';
+}
+document.getElementById('email-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleSubmit();
+});
+</script>
+</body>
+</html>
