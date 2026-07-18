@@ -259,32 +259,14 @@ nav{
   font-size:1rem;color:#94A3B8;
   max-width:420px;margin:0 auto 2.8rem;line-height:1.65
 }
-.cta-form{
-  display:flex;gap:.6rem;max-width:400px;
-  margin:0 auto .9rem;flex-wrap:wrap;justify-content:center
-}
-.cta-input{
-  flex:1;min-width:210px;
-  background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.2);
-  color:#fff;font-family:'Inter',sans-serif;
-  font-size:.9rem;padding:.85rem 1rem;
-  border-radius:6px;outline:none;
-  transition:border-color .2s
-}
+
+
 .cta-input::placeholder{color:rgba(255,255,255,.35)}
 .cta-input:focus{border-color:#2563EB}
-.cta-btn{
-  background:#2563EB;color:#fff;
-  font-family:'Inter',sans-serif;
-  font-size:.9rem;font-weight:600;
-  padding:.85rem 1.5rem;border:none;
-  border-radius:6px;cursor:pointer;
-  transition:opacity .2s;white-space:nowrap
-}
+
 .cta-btn:hover{opacity:.88}
 .cta-note{font-size:.78rem;color:rgba(255,255,255,.3)}
-.cta-note.ok{color:#93C5FD}
+
 
 /* ── FOOTER ──────────────────────────── */
 footer{
@@ -668,12 +650,62 @@ footer{
 <section id="cta">
   <span class="tag">Early Access</span>
   <h2 class="cta-h2">Stop explaining.<br>Let your AI <i>remember.</i></h2>
-  <p class="cta-sub">We're onboarding early teams personally. Book a 30-minute call with the founder — we'll look at your setup and show you what's possible.</p>
-  <div class="cta-form">
-    <input type="email" class="cta-input" placeholder="you@company.com" id="email-input">
-    <button class="cta-btn" onclick="handleSubmit()">Book a call</button>
+  <p class="cta-sub">Pick a time that works for you. 30 minutes with the founder — we'll look at your setup and show you what's possible.</p>
+
+  <!-- Cal inline embed with fallback -->
+  <div id="cal-wrapper" style="width:100%;max-width:900px;margin:2rem auto 0;position:relative">
+    <!-- Fallback: always visible, hidden by JS once Cal loads -->
+    <div id="cal-fallback" style="
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:12px;
+      padding:3.5rem 2rem;
+      text-align:center;
+    ">
+      <p style="font-family:'DM Serif Display',serif;font-size:1.5rem;color:#fff;margin-bottom:.8rem">Book a 30-minute call</p>
+      <p style="font-size:.95rem;color:#94A3B8;margin-bottom:2rem;line-height:1.6">Pick a time directly on our calendar. We'll look at your setup<br>and show you what Contextly can do for your team.</p>
+      <a href="https://cal.com/premitive-digital-solutions-r3iigd/30min" target="_blank" rel="noopener" style="
+        display:inline-flex;align-items:center;gap:.5rem;
+        background:#2563EB;color:#fff;
+        font-size:.95rem;font-weight:600;
+        padding:.95rem 2rem;border-radius:6px;
+        text-decoration:none;transition:opacity .2s;
+      ">
+        Open calendar
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+      <p style="font-size:.78rem;color:rgba(255,255,255,.3);margin-top:1.2rem">Or email hello@getcontextly.com</p>
+    </div>
+    <!-- Cal embed container — hidden until script loads -->
+    <div id="my-cal-inline-30min" style="display:none;width:100%;height:700px;overflow:hidden;border-radius:12px;border:1px solid rgba(255,255,255,0.1)"></div>
   </div>
-  <p class="cta-note" id="cta-note">hello@getcontextly.com · No pitch decks. Just a real conversation.</p>
+  <script type="text/javascript">
+    (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+    Cal("init", "30min", {origin:"https://app.cal.com"});
+    Cal.config = Cal.config || {};
+    Cal.config.forwardQueryParams = true;
+    Cal.ns["30min"]("inline", {
+      elementOrSelector:"#my-cal-inline-30min",
+      config: {"layout":"month_view","useSlotsViewOnSmallScreen":"true"},
+      calLink: "premitive-digital-solutions-r3iigd/30min",
+    });
+    Cal.ns["30min"]("ui", {"hideEventTypeDetails":false,"layout":"month_view"});
+    // Show embed, hide fallback once Cal loads
+    Cal.ns["30min"]("on", {action: "linkReady", callback: function() {
+      document.getElementById("my-cal-inline-30min").style.display = "block";
+      document.getElementById("cal-fallback").style.display = "none";
+    }});
+    // Also try showing after a timeout in case linkReady doesn't fire
+    setTimeout(function() {
+      var el = document.getElementById("my-cal-inline-30min");
+      if (el && el.querySelector("iframe")) {
+        el.style.display = "block";
+        document.getElementById("cal-fallback").style.display = "none";
+      }
+    }, 3000);
+  </script>
+
+  <p class="cta-note" style="margin-top:1.5rem">hello@getcontextly.com · No pitch decks. Just a real conversation.</p>
 </section>
 
 <!-- FOOTER -->
@@ -707,24 +739,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-// CTA form
-function handleSubmit() {
-  const inp = document.getElementById('email-input');
-  const note = document.getElementById('cta-note');
-  if (!inp.value.trim() || !inp.value.includes('@')) {
-    inp.style.borderColor = '#EF4444';
-    return;
-  }
-  inp.style.borderColor = '#2563EB';
-  inp.disabled = true;
-  document.querySelector('.cta-btn').disabled = true;
-  document.querySelector('.cta-btn').textContent = 'Sent ✓';
-  note.textContent = "We'll be in touch at " + inp.value.trim() + " — usually within a day.";
-  note.className = 'cta-note ok';
-}
-document.getElementById('email-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleSubmit();
-});
+// CTA handled by Cal.com embed
 </script>
 </body>
 </html>
